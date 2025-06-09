@@ -1,0 +1,169 @@
+openapi: 3.0.0
+info:
+  title: Notes API
+  version: 0.0.0
+tags: []
+paths:
+  /auth/login:
+    post:
+      operationId: Auth_login
+      parameters: []
+      responses:
+        '200':
+          description: The request has succeeded.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Credentials'
+  /auth/register:
+    post:
+      operationId: Auth_register
+      parameters: []
+      responses:
+        '200':
+          description: The request has succeeded.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/User'
+  /notes:
+    get:
+      operationId: Notes_listNotes
+      parameters: []
+      responses:
+        '200':
+          description: The request has succeeded.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ListNotesResponse'
+    post:
+      operationId: Notes_createNote
+      parameters: []
+      responses:
+        '200':
+          description: The request has succeeded.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Note'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Note'
+  /notes/{id}:
+    get:
+      operationId: Notes_getNote
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: The request has succeeded.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Note'
+    put:
+      operationId: Notes_updateNote
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: The request has succeeded.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Note'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Note'
+    delete:
+      operationId: Notes_deleteNote
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: The request has succeeded.
+components:
+  schemas:
+    Credentials:
+      type: object
+      required:
+        - username
+        - password
+      properties:
+        username:
+          type: string
+        password:
+          type: string
+    ListNotesResponse:
+      type: object
+      required:
+        - notes
+      properties:
+        notes:
+          type: array
+          items:
+            $ref: '#/components/schemas/Note'
+    Note:
+      type: object
+      required:
+        - id
+        - title
+        - content
+        - userId
+      properties:
+        id:
+          type: string
+        title:
+          type: string
+        content:
+          type: string
+        userId:
+          type: string
+    User:
+      type: object
+      required:
+        - id
+        - username
+        - password
+      properties:
+        id:
+          type: string
+        username:
+          type: string
+        password:
+          type: string
+servers:
+  - url: http://localhost:3000
+    description: dev
+    variables: {}

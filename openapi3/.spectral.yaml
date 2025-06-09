@@ -1,0 +1,153 @@
+
+rules:
+
+  # ──────────────────────────────────────────────────────
+  #  PATH-LEVEL RULES
+  # ──────────────────────────────────────────────────────
+  path-casing:
+    description: >-
+      Paths must be kebab-case (`/my-resource/chil-esource`).
+    message: "Path '{{property}}' should be kebab-case, lowercase, and use hyphens."
+    severity: error
+    given: "$.paths.*~"             # ~ = property key itself
+    then:
+      function: pattern
+      functionOptions:
+        match: '^(\/([a-z][a-z0-9-]+|{[^}]+}))*\/([a-z][a-z0-9-]+|{[^}]*})?(:[A-Za-z0-9]+)?$'
+
+  paths-no-file-extensions:
+    description: Paths must not include .json or .xml extensions.
+    message: "Remove file extension from path '{{value}}'."
+    severity: error
+    given: "$.paths.*~"
+    then:
+      function: pattern
+      functionOptions:
+        notMatch: "\\.(json|xml)$"
+
+  paths-no-http-verbs:
+    description: Paths must not embed HTTP verbs such as get, post, delete, put.
+    message: "Path '{{value}}' embeds an HTTP verb  move the verb to the method."
+    severity: error
+    given: "$.paths.*~"
+    then:
+      function: pattern
+      functionOptions:
+        notMatch: "^/(get|post|put|delete|patch|head|options)[A-Z0-9-_/]*"
+
+  paths-no-trailing-slash:
+    description: Paths must not end with a trailing slash (except root `/`).
+    message: "Trailing slash found in '{{value}}'; remove it."
+    severity: error
+    given: "$.paths.*~"
+    then:
+      function: pattern
+      functionOptions:
+        notMatch: "^.+/$"           # fails `/users/` but allows `/`
+
+  paths-avoid-special-characters:
+    description: Paths must not contain $,&,+,;,=,?,@,% or similar.
+    message: "Path '{{value}}' contains forbidden special characters."
+    severity: error
+    given: "$.paths.*~"
+    then:
+      function: pattern
+      functionOptions:
+        notMatch: "[$&+,;=@%?]"
+
+  paths-no-query-params:
+    description: Query params belong in `parameters`, not baked into the path.
+    message: "Remove query string from path '{{value}}'."
+    severity: error
+    given: "$.paths.*~"
+    then:
+      function: pattern
+      functionOptions:
+        notMatch: "\\?"
+
+  resource-names-plural:
+    description: Resource segments should be plural (unless a path param).
+    message: "Final static segment '{{error}}' should be plural."
+    severity: error
+    given: "$.paths.*~"
+    then:
+      function: resourcePlural
+    # custom inline JavaScript for plural check
+      implementations:
+        resourcePlural:
+          schema:
+            $async: true
+            type: function
+            function: |
+              module.exports = function (targetVal) {
+                // ignore parameterised paths like /users/{user_id}
+                const staticSeg = targetVal.replace(/\/\{[^}]+\}$/,'').split('/').pop();
+                if (staticSeg && !staticSeg.endsWith('s')) {
+                  return [{ message: staticSeg }];
+                }
+              };
+
+  # ──────────────────────────────────────────────────────
+  #  PATH PARAMETER RULES
+  # ──────────────────────────────────────────────────────
+  path-parameters-snake-case:
+    description: Path parameter names must be snake_case, no digits.
+    message: "Path parameter '{{value}}' must be snake_case and digit-free."
+    severity: error
+    given:
+      - "$.paths.*.parameters[?(@.in=='path')].name"
+      - "$.paths.*.*.parameters[?(@.in=='path')].name"
+    then:
+      function: casing
+      functionOptions:
+        type: snake
+        separator: 
+          char: "_"
+        disallowDigits: true
+
+  path-parameters-on-path-only:
+    description: Path parameters should be defined at path level (not per operation).
+    message: "Move path parameter '{{value}}' to the path-level `parameters` array."
+    severity: error
+    given: "$.paths.*.*.parameters[?(@.in=='path')]"   # any op-level path param
+    then:
+      function: falsy
+
+  # ──────────────────────────────────────────────────────
+  #  QUERY PARAMETER RULES
+  # ──────────────────────────────────────────────────────
+  query-parameters-snake-case:
+    description: Query parameter names must be snake_case, no digits.
+    message: "Query parameter '{{value}}' must be snake_case and digit-free."
+    severity: error
+    given: "$..parameters[?(@.in=='query')].name"
+    then:
+      function: casing
+      functionOptions:
+        type: snake
+        separator:
+          char: "_"
+        disallowDigits: true
+
+  # ──────────────────────────────────────────────────────
+  #  SERVER RULES
+  # ──────────────────────────────────────────────────────
+  server-lowercase:
+    description: Server URLs must be entirely lowercase.
+    message: "Server URL '{{value}}' must be lowercase."
+    severity: error
+    given: "$.servers[*].url"
+    then:
+      function: pattern
+      functionOptions:
+        match: "^[a-z0-9:/._-]+$"
+
+  server-has-api:
+    description: Server base URL should include `/api`.
+    message: "Server URL '{{value}}' must include '/api'."
+    severity: error
+    given: "$.servers[*].url"
+    then:
+      function: pattern
+      functionOptions:
+        match: "/api(/|$)"

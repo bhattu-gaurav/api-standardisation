@@ -1,0 +1,170 @@
+openapi: 3.0.0
+info:
+  title: Notes API
+  version: 0.0.0
+tags: []
+paths:
+  /auth/login:
+    post:
+      operationId: Auth_login
+      responses:
+        '200':
+          description: The request has succeeded.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Credentials'
+  /auth/register:
+    post:
+      operationId: Auth_register
+      responses:
+        '200':
+          description: The request has succeeded.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/User'
+  /notes:
+    get:
+      operationId: Notes_listNotes
+      responses:
+        '200':
+          description: The request has succeeded.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotesList'
+    post:
+      operationId: Notes_createNote
+      responses:
+        '200':
+          description: The request has succeeded.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Note'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Note'
+  /notes/{id}:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string    
+    get:
+      operationId: Notes_getNote
+      responses:
+        '200':
+          description: The request has succeeded.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Note'
+    put:
+      operationId: Notes_updateNote
+      responses:
+        '200':
+          description: The request has succeeded.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Note'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Note'
+    delete:
+      operationId: Notes_deleteNote
+      responses:
+        '200':
+          description: The request has succeeded.
+components:
+  schemas:
+    Credentials:
+      type: object
+      required:
+        - username
+        - password
+      properties:
+        username:
+          type: string
+        password:
+          type: string
+    Note:
+      type: object
+      required:
+        - id
+        - title
+        - content
+        - userId
+      properties:
+        id:
+          type: string
+        title:
+          type: string
+        content:
+          type: string
+        userId:
+          type: string
+    NoteRequest:
+      type: object
+      required:
+        - id
+      properties:
+        id:
+          type: string
+    NotesList:
+      type: object
+      required:
+        - notes
+      properties:
+        notes:
+          type: array
+          items:
+            $ref: '#/components/schemas/Note'
+    UpdateNoteRequest:
+      type: object
+      required:
+        - id
+        - note
+      properties:
+        id:
+          type: string
+        note:
+          $ref: '#/components/schemas/Note'
+    User:
+      type: object
+      required:
+        - id
+        - username
+        - password
+      properties:
+        id:
+          type: string
+        username:
+          type: string
+        password:
+          type: string
+servers:
+  - url: http://api.squadcast.com/api
+    description: Development server
+    variables: {}
