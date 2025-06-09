@@ -1,0 +1,26 @@
+name: API Lint
+
+on:           
+  push:
+    branches: [ "**" ]
+  pull_request:
+
+jobs:
+  spectral-lint:
+    runs-on: ubuntu-latest
+    steps:
+      # 1️⃣  Get the repo code
+      - uses: actions/checkout@v4
+
+      # 2️⃣  Set up Node (needed for the CLI)
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"         # any LTS works
+      - name: Install Spectral CLI
+        run: npm i -g @stoplight/spectral@latest
+      - name: Spectral Lint
+        run: |
+          npx spectral lint "openapi3/openapi.yaml" \
+            --ruleset .spectral.yaml \
+            --format stylish \
+            --fail-severity warn

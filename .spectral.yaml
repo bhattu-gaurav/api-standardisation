@@ -65,27 +65,27 @@ rules:
       functionOptions:
         notMatch: "\\?"
 
-  resource-names-plural:
-    description: Resource segments should be plural (unless a path param).
-    message: "Final static segment '{{error}}' should be plural."
-    severity: error
-    given: "$.paths.*~"
-    then:
-      function: resourcePlural
-    # custom inline JavaScript for plural check
-      implementations:
-        resourcePlural:
-          schema:
-            $async: true
-            type: function
-            function: |
-              module.exports = function (targetVal) {
-                // ignore parameterised paths like /users/{user_id}
-                const staticSeg = targetVal.replace(/\/\{[^}]+\}$/,'').split('/').pop();
-                if (staticSeg && !staticSeg.endsWith('s')) {
-                  return [{ message: staticSeg }];
-                }
-              };
+  # resource-names-plural:
+  #   description: Resource segments should be plural (unless a path param).
+  #   message: "Final static segment '{{error}}' should be plural."
+  #   severity: error
+  #   given: "$.paths.*~"
+  #   then:
+  #     function: resourcePlural
+  #   # custom inline JavaScript for plural check
+  #     implementations:
+  #       resourcePlural:
+  #         schema:
+  #           $async: true
+  #           type: function
+  #           function: |
+  #             module.exports = function (targetVal) {
+  #               // ignore parameterised paths like /users/{user_id}
+  #               const staticSeg = targetVal.replace(/\/\{[^}]+\}$/,'').split('/').pop();
+  #               if (staticSeg && !staticSeg.endsWith('s')) {
+  #                 return [{ message: staticSeg }];
+  #               }
+  #             };
 
   # ──────────────────────────────────────────────────────
   #  PATH PARAMETER RULES
