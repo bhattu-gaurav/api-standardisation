@@ -3,8 +3,6 @@ name: API Lint
 on:           
   push:
     branches: [ "**" ]
-    paths:
-      - 'openapi3/openapi.yaml'
   pull_request:
 
 jobs:
