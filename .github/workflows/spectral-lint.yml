@@ -26,11 +26,13 @@ jobs:
             --ruleset .spectral.yaml \
             --format stylish \
             --fail-severity warn
-      - name: Sync to SwaggerHub
-        uses: swaggerhub/actions/sync@v1
-        with:
-          api: 'demoorg-9f2/notes-api'
-          version: 1.0.0
-          file: 'openapi3/openapi.yaml'
-          token: ${{ secrets.SWAGGERHUB_API_KEY }}    
+      - name: Sync OpenAPI to SwaggerHub
+        env:
+          SWAGGERHUB_API_KEY: ${{ secrets.SWAGGERHUB_API_KEY }}
+        run: |
+          API_VERSION=$(grep -m 1 "version" openapi3/openapi.yaml | cut -d':' -f2 | tr -d ' ')
+          curl -X POST "https://api.swaggerhub.com/apis/demoorg-9f2/notes-api/$API_VERSION?isPrivate=true&version=$API_VERSION&oas=3.0.3&force=true" \
+            -H "Content-Type: application/yaml" \
+            -H "Authorization: $SWAGGERHUB_API_KEY" \
+            --data-binary @openapi3/openapi.yaml      
   
