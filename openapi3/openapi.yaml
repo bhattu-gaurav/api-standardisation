@@ -4,7 +4,7 @@ info:
   version: 0.0.0
 tags: []
 paths:
-  /auth_ok/login:
+  /auth/login:
     post:
       operationId: Auth_login
       responses:
