@@ -1,0 +1,186 @@
+openapi: 3.0.0
+info:
+  title: Notes API
+  version: 0.0.0
+servers:
+- url: http://api.squadcast.com/api
+  description: Development server
+paths:
+  /auth-ok/login:
+    post:
+      operationId: Auth_login
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Credentials"
+        required: true
+      responses:
+        "200":
+          description: The request has succeeded.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+  /auth/register:
+    post:
+      operationId: Auth_register
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/User"
+        required: true
+      responses:
+        "200":
+          description: The request has succeeded.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+  /notes:
+    get:
+      operationId: Notes_listNotes
+      responses:
+        "200":
+          description: The request has succeeded.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/NotesList"
+    post:
+      operationId: Notes_createNote
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Note"
+        required: true
+      responses:
+        "200":
+          description: The request has succeeded.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Note"
+  /notes/{id}:
+    get:
+      operationId: Notes_getNote
+      parameters:
+      - name: id
+        in: path
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      responses:
+        "200":
+          description: The request has succeeded.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Note"
+    put:
+      operationId: Notes_updateNote
+      parameters:
+      - name: id
+        in: path
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Note"
+        required: true
+      responses:
+        "200":
+          description: The request has succeeded.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Note"
+    delete:
+      operationId: Notes_deleteNote
+      parameters:
+      - name: id
+        in: path
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      responses:
+        "200":
+          description: The request has succeeded.
+components:
+  schemas:
+    Credentials:
+      required:
+      - password
+      - username
+      type: object
+      properties:
+        username:
+          type: string
+        password:
+          type: string
+    Note:
+      required:
+      - content
+      - id
+      - title
+      - userId
+      type: object
+      properties:
+        id:
+          type: string
+        title:
+          type: string
+        content:
+          type: string
+        userId:
+          type: string
+    NoteRequest:
+      required:
+      - id
+      type: object
+      properties:
+        id:
+          type: string
+    NotesList:
+      required:
+      - notes
+      type: object
+      properties:
+        notes:
+          type: array
+          items:
+            $ref: "#/components/schemas/Note"
+    UpdateNoteRequest:
+      required:
+      - id
+      - note
+      type: object
+      properties:
+        id:
+          type: string
+        note:
+          $ref: "#/components/schemas/Note"
+    User:
+      required:
+      - id
+      - password
+      - username
+      type: object
+      properties:
+        id:
+          type: string
+        username:
+          type: string
+        password:
+          type: string
