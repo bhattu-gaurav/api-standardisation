@@ -24,13 +24,14 @@ jobs:
             --ruleset .spectral.yaml \
             --format stylish \
             --fail-severity warn
-      - name: Sync OpenAPI to SwaggerHub
+      - name: Install SwaggerHub CLI
+        run: npm install -g swaggerhub-cli  
+      - name: Set up SwaggerHub CLI environment
         env:
           SWAGGERHUB_API_KEY: ${{ secrets.SWAGGERHUB_API_KEY }}
+          SWAGGERHUB_URL: https://api.swaggerhub.com
         run: |
-          API_VERSION=$(grep -m 1 "version" openapi3/openapi.yaml | cut -d':' -f2 | tr -d ' ')
-          curl -X POST "https://api.swaggerhub.com/apis/demoorg-9f2/notes-api/$API_VERSION?isPrivate=true&version=$API_VERSION&oas=3.0.3&force=true" \
-            -H "Content-Type: application/yaml" \
-            -H "Authorization: $SWAGGERHUB_API_KEY" \
-            --data-binary @openapi3/openapi.yaml      
-  
+          echo "SWAGGERHUB_API_KEY=$SWAGGERHUB_API_KEY" >> $GITHUB_ENV
+          echo "SWAGGERHUB_URL=$SWAGGERHUB_URL" >> $GITHUB_ENV  
+      - name: Sync OpenAPI file to SwaggerHub
+        run: swaggerhub api:update demoorg-9f2/notes-api/1.0.0 --file openapi3/openapi.yaml
