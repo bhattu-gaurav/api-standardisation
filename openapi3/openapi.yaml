@@ -4,22 +4,22 @@ info:
   version: 1.0.0
 tags: []
 paths:
-  # /auth/login:
-  #   post:
-  #     operationId: Auth_login
-  #     responses:
-  #       '200':
-  #         description: The request has succeeded.
-  #         content:
-  #           application/json:
-  #             schema:
-  #               $ref: '#/components/schemas/User'
-  #     requestBody:
-  #       required: true
-  #       content:
-  #         application/json:
-  #           schema:
-  #             $ref: '#/components/schemas/Credentials'
+  /auth/login:
+    post:
+      operationId: Auth_login
+      responses:
+        '200':
+          description: The request has succeeded.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Credentials'
   /auth/register:
     post:
       operationId: Auth_register
