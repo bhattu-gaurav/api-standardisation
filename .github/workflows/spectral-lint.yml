@@ -3,10 +3,12 @@ name: API Lint
 on:           
   push:
     branches: [ "**" ]
+    paths:
+      - 'openapi3/openapi.yaml'
   pull_request:
 
 jobs:
-  spectral-lint:
+  spectral-lint-swaggerhub-sync:
     runs-on: ubuntu-latest
     steps:
       # 1️⃣  Get the repo code
@@ -24,3 +26,11 @@ jobs:
             --ruleset .spectral.yaml \
             --format stylish \
             --fail-severity warn
+      - name: Sync to SwaggerHub
+        uses: swaggerhub/actions/sync@v1
+        with:
+          api: 'demoorg-9f2/notes-api'
+          version: 1.0.0
+          file: 'openapi3/openapi.yaml'
+          token: ${{ secrets.SWAGGERHUB_API_KEY }}    
+  
